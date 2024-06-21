@@ -15,6 +15,12 @@ def register():
             logging.error('No JSON data received')
             return jsonify({'error': 'Invalid JSON format'}), 400
         
+        required_fields = ['nombres','apellidos','ciudad','email','telefono','genero','fechanacimiento','nickusuario','contrasena']
+        for field in required_fields:
+            if field not in data or data[field] is None:
+                logging.error(f'Missing or None field: {field}')
+                return jsonify({'error': f'Missing or None field: {field}'}),400
+        
         new_user = User(
             nombres=data.get('nombres'),
             apellidos=data.get('apellidos'),
@@ -24,7 +30,7 @@ def register():
             genero=data.get('genero'),
             fechanacimiento=data.get('fechanacimiento'),
             nickusuario=data.get('nickusuario'),
-            rol=data.get('rol')
+            rol= "ESTUDIANTE"
         )
         new_user.set_password(data.get('contrasena'))
         
