@@ -5,6 +5,9 @@ from flask_cors import CORS
 from routes.user_routes import user_routes
 from routes.test_db import test_db_bp
 from routes.register_routes import register_user
+from routes.test_puntaje_routes import test_puntaje_routes
+from routes.perfil_usuario_routes import perfil_usuario_routes
+from routes.test_respuesta_routes import test_routes
 from config import Config
 from utils.db import db
 
@@ -29,6 +32,9 @@ app.secret_key = 'clavesecreta123'
 app.register_blueprint(user_routes)
 app.register_blueprint(test_db_bp)
 app.register_blueprint(register_user)
+app.register_blueprint(test_puntaje_routes)
+app.register_blueprint(test_routes)
+app.register_blueprint(perfil_usuario_routes)
 
 
 if __name__ == '__main__':
