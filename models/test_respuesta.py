@@ -2,13 +2,13 @@ from utils.db import db
 
 class TestRespuesta(db.Model):
     __tablename__ = 'testrespuesta'
-    idtipotest = db.Column(db.Integer)
-    idperfil = db.Column(db.Integer, db.ForeignKey('perfilusuario.idperfil'))
-    pregunta = db.Column(db.Integer)
+    idtipotest = db.Column(db.Integer, primary_key=True)
+    idusuario = db.Column(db.Integer, db.ForeignKey('usuario.idusuario'))
+    pregunta = db.Column(db.Integer, primary_key=True)
     respuesta = db.Column(db.Integer)
 
-    def __init__ (self, idtipotest, idperfil, pregunta, respuesta):
+    def __init__ (self, idtipotest, idusuario, pregunta, respuesta):
         self.idtipotest=idtipotest
-        self.idperfil=idperfil
+        self.idusuario=idusuario
         self.pregunta=pregunta
         self.respuesta=respuesta

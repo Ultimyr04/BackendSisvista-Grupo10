@@ -1,49 +1,79 @@
 from flask import Blueprint, request, jsonify, make_response
 from models.test_respuesta import TestRespuesta
 from models.test_puntaje import TestPuntaje
+from models.nivel_ansiedad import NivelAnsiedad
+from models.nivel_gad import NivelGad
+from models.nivel_hama import NivelHama
 from utils.db import db
 from schemas.test_respuesta_schema import test_respuesta_schema, tests_respuesta_schema
 from schemas.test_puntaje_schema import test_puntaje_schema
+import logging
+
+# Configuración de logging
+logging.basicConfig(level=logging.DEBUG)
 
 test_routes = Blueprint("test_routes", __name__)
 
 @test_routes.route('/api/test_respuesta_routes/test', methods=['POST'])
 def create_test():
-    idusuario = request.json.get('idusuario')
-    respuestas = request.json.get('respuestas')  # Lista de diccionarios con 'pregunta' y 'respuesta'
-    idtipotest = request.json.get('idtipotest')  # Tipo de test
+    try:
+        data = request.json
+        logging.debug(f"Request data: {data}")
+        
+        idusuario = data.get('idusuario')
+        respuestas = data.get('respuestas')
+        idtipotest = data.get('idtipotest')
+        
+        logging.debug(f"Received idusuario: {idusuario}")
+        logging.debug(f"Received respuestas: {respuestas}")
+        logging.debug(f"Received idtipotest: {idtipotest}")
 
-    # Validar que se hayan proporcionado exactamente 10 respuestas
-    if not respuestas or len(respuestas) != 10:
-        return make_response(jsonify({'message': 'Debe proporcionar 10 respuestas', 'status': 400}), 400)
+        if not idusuario or not respuestas or not idtipotest:
+            return jsonify({"error": "Faltan datos necesarios."}), 400
+        
+        for respuesta in respuestas:
+            pregunta_numero = respuesta['pregunta']
+            respuesta_valor = respuesta['respuesta']
+            
+            nueva_respuesta = TestRespuesta(
+                idtipotest=idtipotest,
+                idusuario=idusuario,
+                pregunta=pregunta_numero,
+                respuesta=respuesta_valor
+            )
+            db.session.add(nueva_respuesta)
+        
+        db.session.commit()
+        
+        return jsonify({"message": "Respuestas guardadas correctamente."}), 201
+    
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logging.error(f"Error while processing the request: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
-    idperfil = idusuario  # Asumiendo que idperfil es el mismo que idusuario
-    total_puntaje = sum([item['respuesta'] for item in respuestas])
+    except Exception as e:
+        logging.error(f"Exception details: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
-    # Guardar cada respuesta en la tabla TestRespuesta
-    for item in respuestas:
-        pregunta = item['pregunta']
-        respuesta = item['respuesta']
-
-        new_respuesta = TestRespuesta(idtipotest, idperfil, pregunta, respuesta)
-        db.session.add(new_respuesta)
-
-    # Guardar el puntaje total en la tabla TestPuntaje
-    new_puntaje = TestPuntaje(totaltest1=total_puntaje, totaltest2=0, totaltest3=0, idnivelansiedad=None)
-    db.session.add(new_puntaje)
-    db.session.commit()
-
-    data = {
-        'message': 'Respuestas del test creadas!',
-        'status': 201
-    }
-
-    return make_response(jsonify(data), 201)
 
 @test_routes.route('/api/test_respuesta_routes/test/suma_puntajes/<int:idusuario>', methods=['GET'])
 def get_suma_puntajes(idusuario):
+    """
+    Endpoint para obtener la suma de puntajes de tests para un usuario específico.
+
+    Se espera recibir:
+    - idusuario: ID del usuario.
+
+    Funcionamiento:
+    - Filtra las respuestas de tests por ID de usuario.
+    - Calcula la suma total de puntajes.
+
+    Respuestas:
+    - Retorna un JSON con la suma de puntajes y estado 200 si se encuentra el usuario y hay puntajes calculados.
+    """
     # Filtrar registros por idusuario
-    test_respuestas = TestRespuesta.query.filter_by(idperfil=idusuario).all()
+    test_respuestas = TestRespuesta.query.filter_by(idusuario=idusuario).all()
 
     if not test_respuestas:
         return make_response(jsonify({'message': 'No se encontraron registros para el usuario', 'status': 404}), 404)
@@ -61,6 +91,15 @@ def get_suma_puntajes(idusuario):
 
 @test_routes.route('/api/test_respuesta_routes/test', methods=['GET'])
 def get_tests():
+    """
+    Endpoint para obtener todas las respuestas de tests.
+
+    Funcionamiento:
+    - Obtiene todas las respuestas de tests almacenadas en la base de datos.
+
+    Respuestas:
+    - Retorna un JSON con todas las respuestas de tests y estado 200.
+    """
     all_tests = TestRespuesta.query.all()
     result = tests_respuesta_schema.dump(all_tests)
 

@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
@@ -10,6 +11,9 @@ from routes.perfil_usuario_routes import perfil_usuario_routes
 from routes.test_respuesta_routes import test_routes
 from config import Config
 from utils.db import db
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 app = Flask(__name__)

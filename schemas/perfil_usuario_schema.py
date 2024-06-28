@@ -1,10 +1,11 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from models.perfil_usuario import PerfilUsuario
 
+
 class PerfilUsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = PerfilUsuario
-        fields = ('idperfil','idusuario', 'idpuntajes', 'imagenperfil')
+        fields = ('idperfil','idusuario', 'imagenperfil')
         load_instance = True
 
 perfil_usuario_schema = PerfilUsuarioSchema()
