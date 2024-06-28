@@ -2,9 +2,9 @@ from flask import Blueprint, request, jsonify
 from models.user import Persona, Usuario, Estudiante, Ubigeo
 from utils.db import db
 
-register_user = Blueprint('register_user', __name__)
+register_bp = Blueprint('register_bp', __name__)
 
-@register_user.route('/api/register', methods=['POST'])
+@register_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     nombres = data.get('nombres')
@@ -20,7 +20,7 @@ def register():
         return jsonify({"error": "Todos los campos son requeridos"}), 400
 
     try:
-        # Verificar si el usuario o el email ya existen
+        # Verificar si el usuario, email o teléfono ya existen
         if Usuario.query.filter((Usuario.nickusuario == nickusuario) | (Usuario.email == email) | (Usuario.telefono == telefono)).first():
             return jsonify({"error": "El usuario, email o teléfono ya existen"}), 400
 
@@ -48,9 +48,7 @@ def register():
 
         # Crear el nuevo estudiante
         new_estudiante = Estudiante(
-            idpersona=new_persona.idpersona,
-            codigoalumno=None,  # Asigna el valor adecuado si está disponible
-            carrera=None  # Asigna el valor adecuado si está disponible
+            idpersona=new_persona.idpersona
         )
         db.session.add(new_estudiante)
         db.session.commit()
