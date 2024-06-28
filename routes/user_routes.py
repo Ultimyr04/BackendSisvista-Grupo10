@@ -41,7 +41,8 @@ def login():
                     else:
                         role = 'UNKNOWN'
                 
-                access_token = create_access_token(identity={"usuario": user.nickusuario, "rol": role, "persona": {"nombres": persona.nombres, "apellidos": persona.apellidos}})
+                # Crear el token de acceso e incluir el idusuario en la carga útil
+                access_token = create_access_token(identity={"usuario": user.nickusuario, "idusuario": user.idusuario, "rol": role, "persona": {"nombres": persona.nombres, "apellidos": persona.apellidos}})
                 return jsonify(access_token=access_token), 200
             else:
                 print("Contraseña incorrecta")
