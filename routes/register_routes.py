@@ -13,10 +13,12 @@ def register():
     email = data.get('email')
     telefono = data.get('telefono')
     genero = data.get('genero')
+    fechanacimiento = data.get('fechanacimiento')
     nickusuario = data.get('nickusuario')
     contrasena = data.get('contrasena')
     
-    if not (nombres and apellidos and idubigeo and email and telefono and genero and nickusuario and contrasena):
+    
+    if not (nombres and apellidos and idubigeo and email and telefono and genero and fechanacimiento and nickusuario and contrasena):
         return jsonify({"error": "Todos los campos son requeridos"}), 400
 
     try:
@@ -29,7 +31,8 @@ def register():
             nombres=nombres,
             apellidos=apellidos,
             idubigeo=idubigeo,
-            genero=genero
+            genero=genero,
+            fechanacimiento=fechanacimiento
         )
         db.session.add(new_persona)
         db.session.flush()  # Esto asegura que new_persona.idpersona esté disponible
