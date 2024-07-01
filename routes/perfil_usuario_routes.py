@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
 from models.perfil_usuario import PerfilUsuario
-from models.user import User
+from models.user import Usuario
 from models.test_respuesta import TestRespuesta
 from models.test_puntaje import TestPuntaje
 from models.nivel_ansiedad import NivelAnsiedad
@@ -15,7 +15,7 @@ def create_perfil_usuario():
     idusuario = request.json.get('idusuario')
 
     # Obtener idusuario correspondiente al id_usuario desde la tabla Usuario
-    usuario = User.query.filter_by(idusuario=idusuario).first()
+    usuario = Usuario.query.filter_by(idusuario=idusuario).first()
     if not usuario:
         data = {
             'message': 'Usuario no encontrado',

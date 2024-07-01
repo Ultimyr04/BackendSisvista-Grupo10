@@ -10,4 +10,4 @@ Flask-JWT-Extended
 Flask-CORS
 python-dotenv
 werkzeug
-
+marshmallow-sqlalchemy

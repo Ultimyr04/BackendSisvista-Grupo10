@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
-from models.user import Usuario, Estudiante, Psicologo, Trabajador
+from models.user import Usuario, Estudiante, Psicologo, Trabajador, Persona
 from utils.db import db
 
-user_routes = Blueprint('user_routes', __name__)
+user_bp = Blueprint('user_bp', __name__)
 
-@user_routes.route('/api/login', methods=['POST'])
+@user_bp.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     usuario = data.get('usuario')
@@ -16,25 +16,33 @@ def login():
     
     try:
         user = Usuario.query.filter_by(nickusuario=usuario).first()
+        
         if user:
             print(f"Usuario encontrado: {user.nickusuario}")
-            print(f"Contraseña almacenada: {user.contrasena}")
-            print(f"Contraseña proporcionada: {contrasena}")
+            print(f"ID del Usuario: {user.idusuario}")  # Imprimir el ID del usuario
             if user.contrasena == contrasena:
                 print("Contraseña correcta")
-                # Verifica si el usuario es un estudiante
+
+                # Obtener información de la persona
+                persona = Persona.query.filter_by(idpersona=user.idpersona).first()
+                if not persona:
+                    return jsonify({"error": "No se encontró la persona asociada"}), 404
+
+                print(f"Persona encontrada: {persona.nombres} {persona.apellidos}")
+
+                # Verificar el rol del usuario
                 estudiante = Estudiante.query.filter_by(idpersona=user.idpersona).first()
                 if estudiante:
                     role = 'ESTUDIANTE'
                 else:
-                    # Verifica si el usuario es un psicólogo
                     psicologo = Psicologo.query.join(Trabajador, Psicologo.idtrabajador == Trabajador.idtrabajador).filter(Trabajador.idpersona == user.idpersona).first()
                     if psicologo:
                         role = 'PSICOLOGO'
                     else:
                         role = 'UNKNOWN'
                 
-                access_token = create_access_token(identity={"usuario": user.nickusuario, "rol": role})
+                # Crear el token de acceso e incluir el idusuario en la carga útil
+                access_token = create_access_token(identity={"usuario": user.nickusuario, "idusuario": user.idusuario, "rol": role, "persona": {"nombres": persona.nombres, "apellidos": persona.apellidos}})
                 return jsonify(access_token=access_token), 200
             else:
                 print("Contraseña incorrecta")
