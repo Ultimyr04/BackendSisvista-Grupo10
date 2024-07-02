@@ -32,8 +32,11 @@ def create_test():
             return jsonify({"error": "Faltan datos necesarios."}), 400
         
         for respuesta in respuestas:
-            pregunta_numero = respuesta['pregunta']
-            respuesta_valor = respuesta['respuesta']
+            pregunta_numero = respuesta.get('pregunta') 
+            respuesta_valor = respuesta.get('respuesta') 
+
+            if pregunta_numero is None or respuesta_valor is None:
+                return jsonify({"error" : "Formato de respuesta incorrecto."}), 400
             
             nueva_respuesta = TestRespuesta(
                 idtipotest=idtipotest,
