@@ -10,9 +10,11 @@ from schemas.perfil_usuario_schema import perfil_usuario_schema
 perfil_usuario_routes = Blueprint("perfil_usuario_routes", __name__)
 
 @perfil_usuario_routes.route('/api/perfil_usuario_routes/perfil-usuario', methods=['POST'])
-#@perfil_usuario_routes.route('/perfil-usuario', methods=['POST'])
 def create_perfil_usuario():
     idusuario = request.json.get('idusuario')
+    observaciones = request.json.get('observaciones')
+    print(f"Observaciones recibidas: {observaciones}")
+    print(f"Observaciones recibidas")
 
     # Obtener idusuario correspondiente al id_usuario desde la tabla Usuario
     usuario = Usuario.query.filter_by(idusuario=idusuario).first()
@@ -24,7 +26,8 @@ def create_perfil_usuario():
         return make_response(jsonify(data), 404)
 
     # Crear nuevo perfil_usuario
-    nuevo_perfil_usuario = PerfilUsuario(idusuario=idusuario)
+    nuevo_perfil_usuario = PerfilUsuario(idusuario=idusuario, observaciones=observaciones)
+    print(f"Nuevo perfil creado: {nuevo_perfil_usuario.observaciones}")
     db.session.add(nuevo_perfil_usuario)
     db.session.commit()
 
@@ -32,12 +35,13 @@ def create_perfil_usuario():
     perfil_serializado = perfil_usuario_schema.dump(nuevo_perfil_usuario)
 
     data = {
-        'message': 'Perfil de usuario creado exitosamente',
+        'message': 'Perfil de Usuario Creado Exitosamente',
         'status': 201,
         'data': perfil_serializado
     }
 
     return make_response(jsonify(data), 201)
+
 
 #@perfil_usuario_routes.route('/api/perfil_usuario_routes/perfil-usuario/<int:id>', methods=['GET'])
 @perfil_usuario_routes.route('/api/perfil_usuario_routes/perfil-usuario/<int:id>', methods=['GET'])
