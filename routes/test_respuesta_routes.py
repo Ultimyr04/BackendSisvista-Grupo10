@@ -53,11 +53,10 @@ def create_test():
     except SQLAlchemyError as e:
         db.session.rollback()
         logging.error(f"Error while processing the request: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
+        return jsonify({"error": "Error en la base de datos"}), 500
     except Exception as e:
         logging.error(f"Exception details: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Error interno"}), 500
 
 
 @test_routes.route('/api/test_respuesta_routes/test/suma_puntajes/<int:idusuario>', methods=['GET'])
@@ -103,13 +102,57 @@ def get_tests():
     Respuestas:
     - Retorna un JSON con todas las respuestas de tests y estado 200.
     """
-    all_tests = TestRespuesta.query.all()
-    result = tests_respuesta_schema.dump(all_tests)
+    try:
+        all_tests = TestRespuesta.query.all()
+        result = tests_respuesta_schema.dump(all_tests)
 
-    data = {
-        'message': 'Todas las respuestas de los tests',
-        'status': 200,
-        'data': result
-    }
+        data = {
+            'message': 'Todas las respuestas de los tests',
+            'status': 200,
+            'data': result
+        }
 
-    return make_response(jsonify(data), 200)
+        return make_response(jsonify(data), 200)
+    
+    except Exception as e:
+        logging.error(f"Exception details: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+    
+@test_routes.route('/api/test_respuesta_routes/test/user/<int:idusuario>', methods=['GET'])
+def get_tests_by_user(idusuario):
+    """
+    Endpoint para obtener todas las respuestas de tests de un usuario específico.
+
+    Parámetros de URL:
+    - idusuario: ID del usuario para filtrar respuestas de tests.
+
+    Funcionamiento:
+    - Filtra las respuestas de tests por ID de usuario.
+    - Retorna un JSON con todas las respuestas de tests del usuario específico y estado 200.
+
+    Respuestas:
+    - Retorna un JSON con todas las respuestas de tests del usuario y estado 200.
+    - Retorna un JSON con un mensaje de error y estado 404 si no se encuentran respuestas para el usuario.
+    """
+    try:
+        # Filtrar registros por idusuario
+        test_respuestas = TestRespuesta.query.filter_by(idusuario=idusuario).all()
+
+        if not test_respuestas:
+            return make_response(jsonify({'message': 'No se encontraron registros para el usuario', 'status': 404}), 404)
+
+        # Serializar los datos de las respuestas de tests
+        result = tests_respuesta_schema.dump(test_respuestas)
+
+        data = {
+            'message': f'Respuestas de tests del usuario {idusuario}',
+            'status': 200,
+            'data': result
+        }
+
+        return make_response(jsonify(data), 200)
+    
+    except Exception as e:
+        logging.error(f"Exception details: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
