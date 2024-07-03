@@ -1,6 +1,9 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
-from models.user import Usuario, Estudiante, Psicologo, Trabajador
+from models.usuario import Usuario
+from models.estudiante import Estudiante
+from models.psicologo import Psicologo
+from models.trabajador import Trabajador
 from models.persona import Persona
 from utils.db import db
 

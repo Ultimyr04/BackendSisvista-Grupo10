@@ -8,4 +8,4 @@ class PerfilUsuarioSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
 perfil_usuario_schema = PerfilUsuarioSchema()
-perfiles_usuario_schema = PerfilUsuarioSchema(many=True)
+perfiles_usuario_schema = PerfilUsuarioSchema(many  =True)
