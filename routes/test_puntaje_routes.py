@@ -45,7 +45,7 @@ def create_test_puntaje():
     promedio = total_suma / 3.0  # Calculamos el promedio
 
     # Determinar el nivel de ansiedads
-    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minpromedio <= promedio, NivelAnsiedad.maxpromedio >= promedio).first()
+    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minrespuesta <= promedio, NivelAnsiedad.maxrespuesta >= promedio).first()
 
     if not nivel_ansiedad:
         return make_response(jsonify({'message': 'No se pudo determinar el nivel de ansiedad', 'status': 400}), 400)
