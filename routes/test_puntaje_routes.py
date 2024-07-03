@@ -6,7 +6,7 @@ from models.perfil_usuario import PerfilUsuario
 from schemas.test_puntaje_schema import tests_puntaje_schema, test_puntaje_schema
 from utils.db import db
 from sqlalchemy.sql import func
-from models.user import Usuario
+from models.usuario import Usuario
 from models.persona import Persona
 
 test_puntaje_routes = Blueprint("test_puntaje_routes", __name__)
