@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 from models.test_puntaje import TestPuntaje
 from models.test_respuesta import TestRespuesta
 from models.nivel_ansiedad import NivelAnsiedad
+from models.perfil_usuario import PerfilUsuario
 from schemas.test_puntaje_schema import tests_puntaje_schema, test_puntaje_schema
 from utils.db import db
 from sqlalchemy.sql import func
@@ -14,42 +15,45 @@ def create_test_puntaje():
     Endpoint para crear el puntaje de un test.
 
     Se espera recibir:
-    - idusuario: ID del usuario que realiza el test.
-    - idtipotest: Tipo de test (1 para test1, 2 para test2, 3 para test3).
-    - promedio: Promedio de puntajes obtenido en el test.
+    - idperfil: ID del perfil que realizó los tests.
 
     Funcionamiento:
-    - Calcula la suma de los puntajes desde TestRespuesta.
-    - Calcula el promedio de los puntajes (totaltest1 + totaltest2 + totaltest3).
+    - Calcula la suma de los puntajes de los tres tipos de tests desde TestRespuesta.
+    - Calcula el promedio de los puntajes.
     - Determina el nivel de ansiedad basado en el promedio de puntajes.
     - Guarda el puntaje del test en la tabla TestPuntaje.
 
     Respuestas:
     - Retorna un JSON con mensaje de éxito, estado 201 y los datos del puntaje creado.
     """
-    idusuario = request.json.get('idusuario')
-    idtipotest = request.json.get('idtipotest')
     idperfil = request.json.get('idperfil')
+    if not idperfil:
+        return make_response(jsonify({'message': 'IDPerfil es requerido', 'status': 400}), 400)
 
-    # Calcular la suma de los puntajes desde TestRespuesta
-    suma_puntajes = db.session.query(func.sum(TestRespuesta.respuesta)).filter_by(idusuario=idusuario, idtipotest=idtipotest).scalar()
+    # Obtener el IDUsuario asociado al IDPerfil
+    idusuario = db.session.query(PerfilUsuario.IDUsuario).filter_by(IDPerfil=idperfil).scalar()
+    if not idusuario:
+        return make_response(jsonify({'message': 'No se encontró el usuario asociado al perfil', 'status': 404}), 404)
 
-    if suma_puntajes is None:
-        return make_response(jsonify({'message': 'No se encontraron respuestas para el usuario', 'status': 404}), 404)
+    # Calcular la suma de los puntajes para cada tipo de test
+    suma_test1 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=1).scalar() or 0
+    suma_test2 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=2).scalar() or 0
+    suma_test3 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=3).scalar() or 0
 
     # Calcular el promedio de los puntajes
-    promedio = (suma_puntajes * 1.0) / 3.0  # Calculamos el promedio
+    total_suma = suma_test1 + suma_test2 + suma_test3
+    promedio = total_suma / 3.0  # Calculamos el promedio
 
-    # Determinar el nivel de ansiedad
-    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minpromedio <= promedio, NivelAnsiedad.maxpromedio >= promedio).first()
+    # Determinar el nivel de ansiedads
+    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.MinRespuesta <= promedio, NivelAnsiedad.MaxRespuesta >= promedio).first()
 
     if not nivel_ansiedad:
         return make_response(jsonify({'message': 'No se pudo determinar el nivel de ansiedad', 'status': 400}), 400)
 
     new_puntaje = TestPuntaje(
-        totaltest1=suma_puntajes if idtipotest == 1 else 0,
-        totaltest2=suma_puntajes if idtipotest == 2 else 0,
-        totaltest3=suma_puntajes if idtipotest == 3 else 0,
+        totaltest1=suma_test1,
+        totaltest2=suma_test2,
+        totaltest3=suma_test3,
         promedio=promedio,
         idnivelansiedad=nivel_ansiedad.idnivelansiedad,
         idperfil=idperfil
@@ -88,6 +92,7 @@ def get_tests_puntajes():
 
     return make_response(jsonify(data), 200)
 
+
 @test_puntaje_routes.route('/api/test_puntaje/<int:id>', methods=['GET'])
 def get_test_puntaje(id):
     """
@@ -124,6 +129,7 @@ def get_test_puntaje(id):
 
     return make_response(jsonify(data), 200)
 
+
 @test_puntaje_routes.route('/api/test_puntaje/<int:id>', methods=['PUT'])
 def update_test_puntaje(id):
     """
@@ -151,19 +157,19 @@ def update_test_puntaje(id):
         }
         return make_response(jsonify(data), 404)
 
-    totaltest1 = request.json.get('totaltest1')
-    totaltest2 = request.json.get('totaltest2')
-    totaltest3 = request.json.get('totaltest3')
-    promedio = request.json.get('promedio')
-    idnivelansiedad = request.json.get('idnivelansiedad')
-    idperfil = request.json.get('idperfil')
+    total_test1 = request.json.get('TotalTest1')
+    total_test2 = request.json.get('TotalTest2')
+    total_test3 = request.json.get('TotalTest3')
+    promedio = request.json.get('Promedio')
+    id_nivel_ansiedad = request.json.get('IDNivelAnsiedad')
+    id_perfil = request.json.get('IDPerfil')
 
-    test_puntaje.totaltest1 = totaltest1 if totaltest1 is not None else test_puntaje.totaltest1
-    test_puntaje.totaltest2 = totaltest2 if totaltest2 is not None else test_puntaje.totaltest2
-    test_puntaje.totaltest3 = totaltest3 if totaltest3 is not None else test_puntaje.totaltest3
-    test_puntaje.promedio = promedio if promedio is not None else test_puntaje.promedio
-    test_puntaje.idnivelansiedad = idnivelansiedad if idnivelansiedad is not None else test_puntaje.idnivelansiedad
-    test_puntaje.idperfil = idperfil if idperfil is not None else test_puntaje.idperfil
+    test_puntaje.TotalTest1 = total_test1 if total_test1 is not None else test_puntaje.TotalTest1
+    test_puntaje.TotalTest2 = total_test2 if total_test2 is not None else test_puntaje.TotalTest2
+    test_puntaje.TotalTest3 = total_test3 if total_test3 is not None else test_puntaje.TotalTest3
+    test_puntaje.Promedio = promedio if promedio is not None else test_puntaje.Promedio
+    test_puntaje.IDNivelAnsiedad = id_nivel_ansiedad if id_nivel_ansiedad is not None else test_puntaje.IDNivelAnsiedad
+    test_puntaje.IDPerfil = id_perfil if id_perfil is not None else test_puntaje.IDPerfil
 
     db.session.commit()
 
@@ -214,4 +220,3 @@ def delete_test_puntaje(id):
     }
 
     return make_response(jsonify(data), 200)
-
