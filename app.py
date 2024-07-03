@@ -41,7 +41,6 @@ app.register_blueprint(user_bp)
 app.register_blueprint(register_bp)
 app.register_blueprint(test_puntaje_routes)
 app.register_blueprint(test_routes)
-
 app.register_blueprint(mapa_calor)
 
 
