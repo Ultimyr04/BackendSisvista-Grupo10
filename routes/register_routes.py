@@ -60,6 +60,7 @@ def register():
         db.session.commit()
 
         #Crear el nuevo perfilUsuario
+        #Creandose con observaciones vacias (NONE)
         new_perfil_usuario = PerfilUsuario(
             idusuario=new_usuario.idusuario,
             observaciones= None
