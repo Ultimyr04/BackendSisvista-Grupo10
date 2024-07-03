@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
-from models.user import Persona, Usuario, Estudiante, Ubigeo
+from models.user import Usuario, Estudiante 
+from models.persona import Persona
+from models.ubigeo import Ubigeo
 from utils.db import db
 
 register_bp = Blueprint('register_bp', __name__)

@@ -7,6 +7,7 @@ from routes.test_db import test_db_bp
 from routes.test_puntaje_routes import test_puntaje_routes
 from routes.perfil_usuario_routes import perfil_usuario_routes
 from routes.test_respuesta_routes import test_routes
+from routes.mapacalor_routes import mapa_calor
 from config import Config
 from utils.db import db
 from routes.test_db import test_db_bp
@@ -44,6 +45,7 @@ app.register_blueprint(register_bp)
 app.register_blueprint(test_puntaje_routes)
 app.register_blueprint(test_routes)
 app.register_blueprint(perfil_usuario_routes)
+app.register_blueprint(mapa_calor)
 
 if __name__ == '__main__':
     app.run(port=5000)
