@@ -1,5 +1,7 @@
 from datetime import date
 from utils.db import db
+from models.persona import Persona
+from models.perfil_usuario import PerfilUsuario
 
 class Usuario(db.Model):
     __tablename__ = 'usuario'
@@ -11,7 +13,9 @@ class Usuario(db.Model):
     contrasena = db.Column(db.String(255))
     fecharegistro = db.Column(db.Date, default=date.today)
     rol = db.Column(db.String(30))
-    persona = db.relationship('Persona')
+    persona = db.relationship('Persona', backref ='usuario')
+    perfil_usuario = db.relationship('PerfilUsuario', backref='usuario')
+
 
 class Estudiante(db.Model):
     __tablename__ = 'estudiante'
