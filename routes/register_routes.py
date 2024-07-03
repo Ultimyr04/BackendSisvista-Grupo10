@@ -5,6 +5,7 @@ from models.persona import Persona
 from models.ubigeo import Ubigeo
 from models.perfil_usuario import PerfilUsuario
 from utils.db import db
+from datetime import datetime
 
 register_bp = Blueprint('register_bp', __name__)
 
@@ -29,13 +30,16 @@ def register():
         if Usuario.query.filter((Usuario.nickusuario == nickusuario) | (Usuario.email == email) | (Usuario.telefono == telefono)).first():
             return jsonify({"error": "El usuario, email o teléfono ya existen"}), 400
 
+        #Convierte la fecha de nacimiento de formato de cadena a DATE
+        fechanacimiento_DATE = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()
+
         # Crear la nueva persona
         new_persona = Persona(
             nombres=nombres,
             apellidos=apellidos,
             idubigeo=int(idubigeo),
             genero=genero,
-            fechanacimiento=fechanacimiento
+            fechanacimiento=fechanacimiento_DATE
         )
         db.session.add(new_persona)
         db.session.flush()  # Esto asegura que new_persona.idpersona esté disponible
