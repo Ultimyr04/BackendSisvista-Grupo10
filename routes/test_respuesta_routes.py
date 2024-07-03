@@ -8,6 +8,7 @@ from utils.db import db
 from schemas.test_respuesta_schema import test_respuesta_schema, tests_respuesta_schema
 from schemas.test_puntaje_schema import test_puntaje_schema
 import logging
+from models.tipo_test import TipoTest
 
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)

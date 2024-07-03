@@ -8,6 +8,7 @@ class TestRespuesta(db.Model):
     pregunta = db.Column(db.Integer)
     respuesta = db.Column(db.Integer)
 
+
     def __init__(self, idusuario, idtipotest, pregunta, respuesta):
         self.idusuario = idusuario
         self.idtipotest = idtipotest
