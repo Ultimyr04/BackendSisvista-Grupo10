@@ -18,4 +18,4 @@ def get_respuestas():
     idtipotest = request.args.get('idtipotest')
     respuestas = Respuesta.query.filter_by(idtipotest=idtipotest).all()
     result = respuestas_schema.dump(respuestas)
-    return jsonify(result)
+    return jsonify(result)  

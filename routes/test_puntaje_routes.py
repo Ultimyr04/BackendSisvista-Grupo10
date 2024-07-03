@@ -6,6 +6,8 @@ from models.perfil_usuario import PerfilUsuario
 from schemas.test_puntaje_schema import tests_puntaje_schema, test_puntaje_schema
 from utils.db import db
 from sqlalchemy.sql import func
+from models.user import Usuario
+from models.persona import Persona
 
 test_puntaje_routes = Blueprint("test_puntaje_routes", __name__)
 
@@ -44,7 +46,7 @@ def create_test_puntaje():
     total_suma = suma_test1 + suma_test2 + suma_test3
     promedio = total_suma / 3.0  # Calculamos el promedio
 
-    # Determinar el nivel de ansiedads
+    # Determinar el nivel de ansiedad
     nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minrespuesta <= promedio, NivelAnsiedad.maxrespuesta >= promedio).first()
 
     if not nivel_ansiedad:
@@ -161,15 +163,15 @@ def update_test_puntaje(id):
     total_test1 = request.json.get('totaltest1')
     total_test2 = request.json.get('totaltest2')
     total_test3 = request.json.get('totaltest3')
-    promedio = request.json.get('Promedio')
-    id_nivel_ansiedad = request.json.get('IDNivelAnsiedad')
-    id_perfil = request.json.get('IDPerfil')
+    promedio = request.json.get('promedio')
+    id_nivel_ansiedad = request.json.get('idnivelansiedad')
+    id_perfil = request.json.get('idperfil')
 
     test_puntaje.totaltest1 = total_test1 if total_test1 is not None else test_puntaje.totaltest1
     test_puntaje.totaltest2 = total_test2 if total_test2 is not None else test_puntaje.totaltest2
     test_puntaje.totaltest3 = total_test3 if total_test3 is not None else test_puntaje.totaltest3
     test_puntaje.promedio = promedio if promedio is not None else test_puntaje.promedio
-    test_puntaje.idnivelAnsiedad = id_nivel_ansiedad if id_nivel_ansiedad is not None else test_puntaje.idnivelansiedad
+    test_puntaje.idnivelansiedad = id_nivel_ansiedad if id_nivel_ansiedad is not None else test_puntaje.idnivelansiedad
     test_puntaje.idperfil = id_perfil if id_perfil is not None else test_puntaje.idperfil
 
     db.session.commit()
@@ -221,3 +223,48 @@ def delete_test_puntaje(id):
     }
 
     return make_response(jsonify(data), 200)
+
+
+@test_puntaje_routes.route('/api/test_puntaje/details', methods=['GET'])
+def get_test_puntaje_details():
+    """
+    Endpoint para obtener detalles de los puntajes de los tests incluyendo nombre, apellido y nivel de ansiedad.
+
+    Respuestas:
+    - Retorna un JSON con los detalles de los puntajes de los tests y estado 200.
+    """
+    # Realizar la consulta para unir las tablas necesarias
+    results = db.session.query(
+        TestPuntaje.totaltest1.label('Test1'),
+        TestPuntaje.totaltest2.label('Test2'),
+        TestPuntaje.totaltest3.label('Test3'),
+        Persona.nombres.label('nombre'),
+        Persona.apellidos.label('apellido'),
+        NivelAnsiedad.nivel.label('nivel')
+    ).join(
+        PerfilUsuario, TestPuntaje.idperfil == PerfilUsuario.idperfil
+    ).join(
+        Usuario, PerfilUsuario.idusuario == Usuario.idusuario
+    ).join(
+        Persona, Usuario.idpersona == Persona.idpersona
+    ).join(
+        NivelAnsiedad, TestPuntaje.idnivelansiedad == NivelAnsiedad.idnivelansiedad
+    ).all()
+
+    # Preparar la respuesta
+    data = [{
+        'Test1': result.Test1,
+        'Test2': result.Test2,
+        'Test3': result.Test3,
+        'nombre': result.nombre,
+        'apellido': result.apellido,
+        'nivel': result.nivel
+    } for result in results]
+
+    response = {
+        'message': 'Detalles de los puntajes de los tests',
+        'status': 200,
+        'data': data
+    }
+
+    return make_response(jsonify(response), 200)
