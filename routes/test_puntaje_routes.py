@@ -31,21 +31,21 @@ def create_test_puntaje():
         return make_response(jsonify({'message': 'IDPerfil es requerido', 'status': 400}), 400)
 
     # Obtener el IDUsuario asociado al IDPerfil
-    idusuario = db.session.query(PerfilUsuario.IDUsuario).filter_by(IDPerfil=idperfil).scalar()
+    idusuario = db.session.query(PerfilUsuario.idusuario).filter_by(idperfil=idperfil).scalar()
     if not idusuario:
         return make_response(jsonify({'message': 'No se encontró el usuario asociado al perfil', 'status': 404}), 404)
 
     # Calcular la suma de los puntajes para cada tipo de test
-    suma_test1 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=1).scalar() or 0
-    suma_test2 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=2).scalar() or 0
-    suma_test3 = db.session.query(func.sum(TestRespuesta.Respuesta)).filter_by(IDUsuario=idusuario, IDTipoTest=3).scalar() or 0
+    suma_test1 = db.session.query(func.sum(TestRespuesta.respuesta)).filter_by(idusuario=idusuario, idtipotest=1).scalar() or 0
+    suma_test2 = db.session.query(func.sum(TestRespuesta.respuesta)).filter_by(idusuario=idusuario, idtipotest=2).scalar() or 0
+    suma_test3 = db.session.query(func.sum(TestRespuesta.respuesta)).filter_by(idusuario=idusuario, idtipotest=3).scalar() or 0
 
     # Calcular el promedio de los puntajes
     total_suma = suma_test1 + suma_test2 + suma_test3
     promedio = total_suma / 3.0  # Calculamos el promedio
 
     # Determinar el nivel de ansiedads
-    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.MinRespuesta <= promedio, NivelAnsiedad.MaxRespuesta >= promedio).first()
+    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minpromedio <= promedio, NivelAnsiedad.maxpromedio >= promedio).first()
 
     if not nivel_ansiedad:
         return make_response(jsonify({'message': 'No se pudo determinar el nivel de ansiedad', 'status': 400}), 400)
@@ -157,19 +157,19 @@ def update_test_puntaje(id):
         }
         return make_response(jsonify(data), 404)
 
-    total_test1 = request.json.get('TotalTest1')
-    total_test2 = request.json.get('TotalTest2')
-    total_test3 = request.json.get('TotalTest3')
+    total_test1 = request.json.get('totaltest1')
+    total_test2 = request.json.get('totaltest2')
+    total_test3 = request.json.get('totaltest3')
     promedio = request.json.get('Promedio')
     id_nivel_ansiedad = request.json.get('IDNivelAnsiedad')
     id_perfil = request.json.get('IDPerfil')
 
-    test_puntaje.TotalTest1 = total_test1 if total_test1 is not None else test_puntaje.TotalTest1
-    test_puntaje.TotalTest2 = total_test2 if total_test2 is not None else test_puntaje.TotalTest2
-    test_puntaje.TotalTest3 = total_test3 if total_test3 is not None else test_puntaje.TotalTest3
-    test_puntaje.Promedio = promedio if promedio is not None else test_puntaje.Promedio
-    test_puntaje.IDNivelAnsiedad = id_nivel_ansiedad if id_nivel_ansiedad is not None else test_puntaje.IDNivelAnsiedad
-    test_puntaje.IDPerfil = id_perfil if id_perfil is not None else test_puntaje.IDPerfil
+    test_puntaje.totaltest1 = total_test1 if total_test1 is not None else test_puntaje.totaltest1
+    test_puntaje.totaltest2 = total_test2 if total_test2 is not None else test_puntaje.totaltest2
+    test_puntaje.totaltest3 = total_test3 if total_test3 is not None else test_puntaje.totaltest3
+    test_puntaje.promedio = promedio if promedio is not None else test_puntaje.promedio
+    test_puntaje.idnivelAnsiedad = id_nivel_ansiedad if id_nivel_ansiedad is not None else test_puntaje.idnivelansiedad
+    test_puntaje.idperfil = id_perfil if id_perfil is not None else test_puntaje.idperfil
 
     db.session.commit()
 
