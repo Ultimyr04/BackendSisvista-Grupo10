@@ -2,8 +2,6 @@ from flask import Blueprint, request, jsonify, make_response
 from models.test_puntaje import TestPuntaje
 from models.test_respuesta import TestRespuesta
 from models.nivel_ansiedad import NivelAnsiedad
-from models.nivel_gad import NivelGad
-from models.nivel_hama import NivelHama
 from schemas.test_puntaje_schema import tests_puntaje_schema, test_puntaje_schema
 from utils.db import db
 from sqlalchemy.sql import func
@@ -18,10 +16,12 @@ def create_test_puntaje():
     Se espera recibir:
     - idusuario: ID del usuario que realiza el test.
     - idtipotest: Tipo de test (1 para test1, 2 para test2, 3 para test3).
+    - promedio: Promedio de puntajes obtenido en el test.
 
     Funcionamiento:
     - Calcula la suma de los puntajes desde TestRespuesta.
-    - Determina el nivel de ansiedad basado en la suma de puntajes.
+    - Calcula el promedio de los puntajes (totaltest1 + totaltest2 + totaltest3).
+    - Determina el nivel de ansiedad basado en el promedio de puntajes.
     - Guarda el puntaje del test en la tabla TestPuntaje.
 
     Respuestas:
@@ -37,13 +37,11 @@ def create_test_puntaje():
     if suma_puntajes is None:
         return make_response(jsonify({'message': 'No se encontraron respuestas para el usuario', 'status': 404}), 404)
 
+    # Calcular el promedio de los puntajes
+    promedio = (suma_puntajes * 1.0) / 3.0  # Calculamos el promedio
+
     # Determinar el nivel de ansiedad
-    if idtipotest == 1:
-        nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minrespuesta <= suma_puntajes, NivelAnsiedad.maxrespuesta >= suma_puntajes).first()
-    elif idtipotest == 2:
-        nivel_ansiedad = NivelGad.query.filter(NivelGad.minrespuesta <= suma_puntajes, NivelGad.maxrespuesta >= suma_puntajes).first()
-    elif idtipotest == 3:
-        nivel_ansiedad = NivelHama.query.filter(NivelHama.minrespuesta <= suma_puntajes, NivelHama.maxrespuesta >= suma_puntajes).first()
+    nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minpromedio <= promedio, NivelAnsiedad.maxpromedio >= promedio).first()
 
     if not nivel_ansiedad:
         return make_response(jsonify({'message': 'No se pudo determinar el nivel de ansiedad', 'status': 400}), 400)
@@ -52,6 +50,7 @@ def create_test_puntaje():
         totaltest1=suma_puntajes if idtipotest == 1 else 0,
         totaltest2=suma_puntajes if idtipotest == 2 else 0,
         totaltest3=suma_puntajes if idtipotest == 3 else 0,
+        promedio=promedio,
         idnivelansiedad=nivel_ansiedad.idnivelansiedad,
         idperfil=idperfil
     )
@@ -155,12 +154,14 @@ def update_test_puntaje(id):
     totaltest1 = request.json.get('totaltest1')
     totaltest2 = request.json.get('totaltest2')
     totaltest3 = request.json.get('totaltest3')
+    promedio = request.json.get('promedio')
     idnivelansiedad = request.json.get('idnivelansiedad')
     idperfil = request.json.get('idperfil')
 
     test_puntaje.totaltest1 = totaltest1 if totaltest1 is not None else test_puntaje.totaltest1
     test_puntaje.totaltest2 = totaltest2 if totaltest2 is not None else test_puntaje.totaltest2
     test_puntaje.totaltest3 = totaltest3 if totaltest3 is not None else test_puntaje.totaltest3
+    test_puntaje.promedio = promedio if promedio is not None else test_puntaje.promedio
     test_puntaje.idnivelansiedad = idnivelansiedad if idnivelansiedad is not None else test_puntaje.idnivelansiedad
     test_puntaje.idperfil = idperfil if idperfil is not None else test_puntaje.idperfil
 
@@ -213,3 +214,4 @@ def delete_test_puntaje(id):
     }
 
     return make_response(jsonify(data), 200)
+
