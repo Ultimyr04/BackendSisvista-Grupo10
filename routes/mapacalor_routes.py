@@ -12,8 +12,8 @@ mapa_calor = Blueprint('mapa_calor', __name__)
 def get_mapa_calor():
     try:
         query = db.session.query(
-            Ubigeo.X.label('longitude'),
-            Ubigeo.Y.label('latitude'),
+            Ubigeo.x.label('longitude'),
+            Ubigeo.y.label('latitude'),
             TestPuntaje.promedio.label('promedio')
         ).join(Persona, Persona.idubigeo == Ubigeo.idubigeo) \
          .join(Usuario, Usuario.idpersona == Persona.idpersona) \
