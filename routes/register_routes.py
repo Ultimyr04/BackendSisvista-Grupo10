@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
-from models.user import Usuario, Estudiante 
+from models.usuario import Usuario 
+from models.estudiante import Estudiante
 from models.persona import Persona
 from models.ubigeo import Ubigeo
+from models.perfil_usuario import PerfilUsuario
 from utils.db import db
 
 register_bp = Blueprint('register_bp', __name__)
@@ -17,8 +19,7 @@ def register():
     genero = data.get('genero')
     fechanacimiento = data.get('fechanacimiento')
     nickusuario = data.get('nickusuario')
-    contrasena = data.get('contrasena')
-    
+    contrasena = data.get('contrasena')   
     
     if not (nombres and apellidos and idubigeo and email and telefono and genero and fechanacimiento and nickusuario and contrasena):
         return jsonify({"error": "Todos los campos son requeridos"}), 400
@@ -32,7 +33,7 @@ def register():
         new_persona = Persona(
             nombres=nombres,
             apellidos=apellidos,
-            idubigeo=idubigeo,
+            idubigeo=int(idubigeo),
             genero=genero,
             fechanacimiento=fechanacimiento
         )
@@ -56,6 +57,14 @@ def register():
             idpersona=new_persona.idpersona
         )
         db.session.add(new_estudiante)
+        db.session.commit()
+
+        #Crear el nuevo perfilUsuario
+        new_perfil_usuario = PerfilUsuario(
+            idusuario=new_usuario.idusuario,
+            observaciones= None
+        )
+        db.session.add(new_perfil_usuario)
         db.session.commit()
 
         return jsonify({"message": "Cuenta creada exitosamente"}), 201

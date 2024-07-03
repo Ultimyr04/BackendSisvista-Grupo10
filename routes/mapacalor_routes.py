@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from models.user import Usuario
+from models.usuario import Usuario
 from models.persona import Persona
 from models.test_puntaje import TestPuntaje
 from models.ubigeo import Ubigeo 

@@ -5,7 +5,6 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from routes.test_db import test_db_bp
 from routes.test_puntaje_routes import test_puntaje_routes
-from routes.perfil_usuario_routes import perfil_usuario_routes
 from routes.test_respuesta_routes import test_routes
 from routes.mapacalor_routes import mapa_calor
 from routes.user_routes import user_bp
@@ -42,7 +41,7 @@ app.register_blueprint(user_bp)
 app.register_blueprint(register_bp)
 app.register_blueprint(test_puntaje_routes)
 app.register_blueprint(test_routes)
-app.register_blueprint(perfil_usuario_routes)
+
 app.register_blueprint(mapa_calor)
 
 
