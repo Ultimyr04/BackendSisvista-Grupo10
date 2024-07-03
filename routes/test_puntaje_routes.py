@@ -48,6 +48,7 @@ def create_test_puntaje():
     nivel_ansiedad = NivelAnsiedad.query.filter(NivelAnsiedad.minrespuesta <= promedio, NivelAnsiedad.maxrespuesta >= promedio).first()
 
     if not nivel_ansiedad:
+        print(nivel_ansiedad)
         return make_response(jsonify({'message': 'No se pudo determinar el nivel de ansiedad', 'status': 400}), 400)
 
     new_puntaje = TestPuntaje(
