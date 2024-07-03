@@ -262,7 +262,7 @@ def get_test_puntaje_details():
     } for result in results]
 
     response = {
-        'message': 'Detalles de los puntajes de los tests',
+        'message': 'Detalle que muestra los puntajes de los tests',
         'status': 200,
         'data': data
     }
