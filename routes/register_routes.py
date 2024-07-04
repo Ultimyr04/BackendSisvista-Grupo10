@@ -6,6 +6,7 @@ from models.ubigeo import Ubigeo
 from models.perfil_usuario import PerfilUsuario
 from utils.db import db
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 register_bp = Blueprint('register_bp', __name__)
 
