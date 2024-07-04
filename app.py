@@ -5,10 +5,11 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from routes.test_db import test_db_bp
 from routes.test_puntaje_routes import test_puntaje_routes
-from routes.test_respuesta_routes import test_routes
+from routes.test_respuesta_routes import test_respuesta_routes
 from routes.mapacalor_routes import mapa_calor
 from routes.user_routes import user_bp
 from routes.register_routes import register_bp
+from routes.formulario_routes import formulario
 from config import Config
 from utils.db import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,12 +38,13 @@ app.secret_key = 'clavesecreta123'
 
 # Registra los blueprints
 app.register_blueprint(test_db_bp)
-app.register_blueprint(user_bp)
-app.register_blueprint(register_bp)
+app.register_blueprint(user_bp) #Verificacion de un usuario y contraseña en el LOGIN
+app.register_blueprint(register_bp) #Registrar un usuario nuevo 
+app.register_blueprint(formulario) #Extraer las preguntas y respuestas
+app.register_blueprint(test_respuesta_routes) #Guarda las respuestas de un usuario
 app.register_blueprint(test_puntaje_routes)
-app.register_blueprint(test_routes)
-app.register_blueprint(mapa_calor)
 
+app.register_blueprint(mapa_calor)
 
 @app.errorhandler(Exception)
 def handle_exception(e):

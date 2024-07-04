@@ -14,9 +14,9 @@ from sqlalchemy.exc import SQLAlchemyError
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)
 
-test_routes = Blueprint("test_routes", __name__)
+test_respuesta_routes = Blueprint("test_routes", __name__)
 
-@test_routes.route('/api/test_respuesta_routes/test', methods=['POST'])
+@test_respuesta_routes.route('/api/test_respuesta_routes/test', methods=['POST'])
 def create_test():
     try:
         data = request.json
@@ -61,7 +61,7 @@ def create_test():
         return jsonify({"error": "Error interno"}), 500
 
 
-@test_routes.route('/api/test_respuesta_routes/test/suma_puntajes/<int:idusuario>', methods=['GET'])
+@test_respuesta_routes.route('/api/test_respuesta_routes/test/suma_puntajes/<int:idusuario>', methods=['GET'])
 def get_suma_puntajes(idusuario):
     """
     Endpoint para obtener la suma de puntajes de tests para un usuario específico.
@@ -93,7 +93,7 @@ def get_suma_puntajes(idusuario):
 
     return make_response(jsonify(data), 200)
 
-@test_routes.route('/api/test_respuesta_routes/test', methods=['GET'])
+@test_respuesta_routes.route('/api/test_respuesta_routes/test', methods=['GET'])
 def get_tests():
     """
     Endpoint para obtener todas las respuestas de tests.
@@ -120,7 +120,7 @@ def get_tests():
         logging.error(f"Exception details: {str(e)}")
         return jsonify({"error": str(e)}), 500
     
-@test_routes.route('/api/test_respuesta_routes/test/user/<int:idusuario>', methods=['GET'])
+@test_respuesta_routes.route('/api/test_respuesta_routes/test/user/<int:idusuario>', methods=['GET'])
 def get_tests_by_user(idusuario):
     """
     Endpoint para obtener todas las respuestas de tests de un usuario específico.
