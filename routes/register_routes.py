@@ -25,11 +25,13 @@ def register():
     contrasena = data.get('contrasena')   
     
     if not (nombres and apellidos and idubigeo and email and telefono and genero and fechanacimiento and nickusuario and contrasena):
+        print("ERROR: Todos los campos son requeridos")  # Imprimir el error
         return jsonify({"error": "Todos los campos son requeridos"}), 400
 
     try:
         # Verificar si el usuario, email o teléfono ya existen
         if Usuario.query.filter((Usuario.nickusuario == nickusuario) | (Usuario.email == email) | (Usuario.telefono == telefono)).first():
+            print("ERROR: El usuario, email o teléfono ya existen")
             return jsonify({"error": "El usuario, email o teléfono ya existen"}), 400
 
         #Convierte la fecha de nacimiento de formato de cadena a DATE
