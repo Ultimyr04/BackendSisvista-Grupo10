@@ -12,6 +12,7 @@ register_bp = Blueprint('register_bp', __name__)
 @register_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
+    print("DATA RECIBIDA: ",data) #Linea para depurar y ver errores
     nombres = data.get('nombres')
     apellidos = data.get('apellidos')
     idubigeo = data.get('idubigeo')
