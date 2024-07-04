@@ -9,6 +9,7 @@ from schemas.test_respuesta_schema import test_respuesta_schema, tests_respuesta
 from schemas.test_puntaje_schema import test_puntaje_schema
 import logging
 from models.tipo_test import TipoTest
+from sqlalchemy.exc import SQLAlchemyError
 
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)
