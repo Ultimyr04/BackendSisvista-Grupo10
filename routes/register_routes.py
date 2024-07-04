@@ -74,7 +74,9 @@ def register():
         db.session.commit()
 
         return jsonify({"message": "Cuenta creada exitosamente"}), 201
-
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error de integridad de datos: " + str(e)}), 400
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Error interno del servidor: " + str(e)}), 500
