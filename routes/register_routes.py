@@ -4,6 +4,7 @@ from models.estudiante import Estudiante
 from models.persona import Persona
 from models.ubigeo import Ubigeo
 from models.perfil_usuario import PerfilUsuario
+from models.test_puntaje import TestPuntaje
 from utils.db import db
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
@@ -75,6 +76,18 @@ def register():
         )
         db.session.add(new_perfil_usuario)
         db.session.commit()
+
+        #Crear nuevo TestPuntaje
+        new_testpuntaje = TestPuntaje(
+            idperfil=new_perfil_usuario.idperfil,
+            totaltest1= None,
+            totaltest2= None,
+            totaltest3= None,
+            promedio= None,
+            idnivelansiedad=None
+        )
+        db.session.add(new_testpuntaje)
+        db.session.commit
 
         return jsonify({"message": "Cuenta creada exitosamente"}), 201
     except IntegrityError as e:
