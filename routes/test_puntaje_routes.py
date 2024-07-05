@@ -8,6 +8,7 @@ from utils.db import db
 from sqlalchemy.sql import func
 from models.usuario import Usuario
 from models.persona import Persona
+from datetime import datetime
 
 test_puntaje_routes = Blueprint("test_puntaje_routes", __name__)
 
@@ -16,7 +17,7 @@ def asignar_test_puntaje():
     data = request.get_json()
     idusuario = data['idusuario']
     idtipotest = data['idtipotest']
-
+    TestPuntaje.fechatest = datetime.utcnow()
     #calcular la suma de respuestas con respecto a un usuario y test especifico
     total_score = db.session.query(func.sum(TestRespuesta.respuesta)).filter_by(idusuario=idusuario, idtipotest = idtipotest).scalar()
 
