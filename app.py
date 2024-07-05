@@ -6,6 +6,7 @@ from flask_cors import CORS
 from routes.test_db import test_db_bp
 from routes.test_puntaje_routes import test_puntaje_routes
 from routes.test_respuesta_routes import test_respuesta_routes
+from routes.testrealizados_routes import testrealizados_routes
 from routes.mapacalor_routes import mapa_calor
 from routes.user_routes import user_bp
 from routes.register_routes import register_bp
@@ -42,9 +43,9 @@ app.register_blueprint(user_bp) #Verificacion de un usuario y contraseña en el 
 app.register_blueprint(register_bp) #Registrar un usuario nuevo 
 app.register_blueprint(formulario) #Extraer las preguntas y respuestas
 app.register_blueprint(test_respuesta_routes) #Guarda las respuestas de un usuario
-app.register_blueprint(test_puntaje_routes)
-
-app.register_blueprint(mapa_calor)
+app.register_blueprint(test_puntaje_routes) #Calcula el total de los tests y promedia, asignando el nivelansiedad
+app.register_blueprint(testrealizados_routes) #Extrae los usuarios, tipotest y el puntaje de su test de cada estudiamte
+app.register_blueprint(mapa_calor) #Usuarios y su respectivo promedio 
 
 @app.errorhandler(Exception)
 def handle_exception(e):
