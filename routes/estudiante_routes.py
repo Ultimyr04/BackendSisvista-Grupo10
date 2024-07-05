@@ -2,6 +2,7 @@
 
 from flask import Blueprint, request, jsonify
 from models.estudiante import Estudiante
+from models.persona import Persona
 from utils.db import db
 
 estudiante_routes = Blueprint("estudiante_routes", __name__)
