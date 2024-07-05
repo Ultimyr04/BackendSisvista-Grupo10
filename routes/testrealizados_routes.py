@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models.usuario import Usuario
 from models.test_puntaje import TestPuntaje
 from models.nivel_ansiedad import NivelAnsiedad
+
 from utils.db import db
 from sqlalchemy.exc import IntegrityError
 

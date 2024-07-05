@@ -16,7 +16,11 @@ class Usuario(db.Model):
     persona = db.relationship('Persona', backref ='usuario')
     perfil_usuario = db.relationship('PerfilUsuario', backref='usuario')
 
-
-
+    def to_dict(self):
+        return{
+            'idusuario': self.idusuario,
+            'usuario' : self.nickusuario,
+            'rol': self.rol
+        }
 
 
