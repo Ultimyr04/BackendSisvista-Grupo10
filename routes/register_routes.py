@@ -84,7 +84,7 @@ def register():
             totaltest2= None,
             totaltest3= None,
             promedio= None,
-            idnivelansiedad=None
+            idnivelansiedad=1
         )
         db.session.add(new_testpuntaje)
         db.session.commit
