@@ -37,7 +37,7 @@ def register():
 
         #Convierte la fecha de nacimiento de formato de cadena a DATE
         fechanacimiento_DATE = datetime.strptime(fechanacimiento, '%Y-%m-%d').date()
-
+        
         # Crear la nueva persona
         new_persona = Persona(
             nombres=nombres,
@@ -92,9 +92,9 @@ def register():
         return jsonify({"message": "Cuenta creada exitosamente"}), 201
     except IntegrityError as e:
         db.session.rollback()
-        print("ERROR: ERROR DE INTEGRIDAD DE DATOS")  # Imprimir el error
+        print("ERROR: ERROR DE INTEGRIDAD DE DATOS", str(e))  # Imprimir el error
         return jsonify({"error": "Error de integridad de datos: " + str(e)}), 400
     except Exception as e:
         db.session.rollback()
-        print("ERROR: ERROR INTERNO DEL SERVIDOR")  # Imprimir el error
+        print("ERROR: ERROR INTERNO DEL SERVIDOR", str(e))  # Imprimir el error
         return jsonify({"error": "Error interno del servidor: " + str(e)}), 500

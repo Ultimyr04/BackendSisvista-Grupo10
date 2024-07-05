@@ -61,6 +61,10 @@ def create_test():
         return jsonify({"error": "Error interno"}), 500
 
 
+
+
+
+
 @test_respuesta_routes.route('/api/test_respuesta_routes/test/suma_puntajes/<int:idusuario>', methods=['GET'])
 def get_suma_puntajes(idusuario):
     """
