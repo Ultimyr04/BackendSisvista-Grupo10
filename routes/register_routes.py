@@ -79,15 +79,15 @@ def register():
 
         #Crear nuevo TestPuntaje
         new_testpuntaje = TestPuntaje(
-            idperfil=new_perfil_usuario.idperfil,
             totaltest1= None,
             totaltest2= None,
             totaltest3= None,
             promedio= None,
-            idnivelansiedad=1
+            idnivelansiedad=1,
+            idperfil=new_perfil_usuario.idperfil,
         )
         db.session.add(new_testpuntaje)
-        db.session.commit
+        db.session.commit()
 
         return jsonify({"message": "Cuenta creada exitosamente"}), 201
     except IntegrityError as e:
