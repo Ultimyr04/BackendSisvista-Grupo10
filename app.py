@@ -11,6 +11,7 @@ from routes.mapacalor_routes import mapa_calor
 from routes.user_routes import user_bp
 from routes.register_routes import register_bp
 from routes.formulario_routes import formulario
+from routes.estudiante_routes import estudiante_routes
 from config import Config
 from utils.db import db
 from sqlalchemy.exc import SQLAlchemyError
@@ -46,6 +47,7 @@ app.register_blueprint(test_respuesta_routes) #Guarda las respuestas de un usuar
 app.register_blueprint(test_puntaje_routes) #Calcula el total de los tests y promedia, asignando el nivelansiedad
 app.register_blueprint(testrealizados_routes) #Extrae los usuarios, tipotest y el puntaje de su test de cada estudiamte
 app.register_blueprint(mapa_calor) #Usuarios y su respectivo promedio 
+app.register_blueprint(estudiante_routes)
 
 @app.errorhandler(Exception)
 def handle_exception(e):
