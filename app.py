@@ -47,7 +47,7 @@ app.register_blueprint(test_respuesta_routes) #Guarda las respuestas de un usuar
 app.register_blueprint(test_puntaje_routes) #Calcula el total de los tests y promedia, asignando el nivelansiedad
 app.register_blueprint(testrealizados_routes) #Extrae los usuarios, tipotest y el puntaje de su test de cada estudiamte
 app.register_blueprint(mapa_calor) #Usuarios y su respectivo promedio 
-app.register_blueprint(estudiante_routes)
+app.register_blueprint(estudiante_routes) #Extraer estudiante por su nombre
 
 @app.errorhandler(Exception)
 def handle_exception(e):

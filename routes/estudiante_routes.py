@@ -12,8 +12,10 @@ def buscar_estudiante():
     if nombre is None:
         return jsonify({"error": "Nombre de estudiante no proporcionado"}), 400
     
-    estudiante = Estudiante.query.filter(Estudiante.nombre.ilike(f"%{nombre}%")).first()
+    # Buscar el estudiante por nombre a través de la relación con Persona
+    estudiante = Estudiante.query.join(Estudiante.persona).filter(db.func.lower(db.func.concat(Persona.nombres, ' ', Persona.apellidos)).ilike(f"%{nombre.lower()}%")).first()
+    
     if estudiante:
-        return jsonify({"mensaje": "Estudiante encontrado", "estudiante": {"id": estudiante.idestudiante, "nombre": estudiante.nombre}}), 200
+        return jsonify({"mensaje": "Estudiante encontrado", "estudiante": {"id": estudiante.idestudiante, "nombre": estudiante.persona.nombres}}), 200
     else:
         return jsonify({"mensaje": "Estudiante no encontrado"}), 404
