@@ -92,7 +92,9 @@ def register():
         return jsonify({"message": "Cuenta creada exitosamente"}), 201
     except IntegrityError as e:
         db.session.rollback()
+        print("ERROR: ERROR DE INTEGRIDAD DE DATOS")  # Imprimir el error
         return jsonify({"error": "Error de integridad de datos: " + str(e)}), 400
     except Exception as e:
         db.session.rollback()
+        print("ERROR: ERROR INTERNO DEL SERVIDOR")  # Imprimir el error
         return jsonify({"error": "Error interno del servidor: " + str(e)}), 500
